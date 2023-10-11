@@ -1,7 +1,7 @@
 CC = gcc
 CFLAGS = -Wall -Wextra
 TARGET = bin/jgs  # Output to the 'bin' folder
-SOURCE = main.c
+SOURCE = src/main.c
 
 .PHONY: all clean
 
