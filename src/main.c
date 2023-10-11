@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "file_utils.h"
+#include "json_utils.h"
 
 void printHelp() {
     printf("Description: A tool for finding the best path through a graph in a JSON file.\n");
@@ -42,13 +43,35 @@ int main(int argc, char *argv[]) {
         // sequential
         printf("No framework specified. Sequential mode.\n");
 
-        char *file_content = loadFile(file_path);
-        if (file_content) {
+        char *jsonStr = loadFile(file_path);
+        if (jsonStr) {
             // Use the file content
-            printf("File content:\n%s\n", file_content);
+            printf("File content:\n%s\n", jsonStr);
+            
+            cJSON* root = parseJSON(jsonStr);
+            
+            if (root != NULL) {
+                int numRoutes;
+                RouteData* routeArray = parseRoutes(root, &numRoutes);
 
+                if (routeArray != NULL) {
+                    for (int i = 0; i < numRoutes; i++) {
+                        const char* id = routeArray[i].id;
+                        cJSON* route = routeArray[i].route;
+
+                        printf("ID: %s\n route: %s\n", id, cJSON_Print(route));
+                        // Process the ID and route cJSON object
+                        // Example: cJSON_Print(route) to print the route JSON
+                    }
+                    free(routeArray);
+                }
+
+                cJSON_Delete(root);
+            }
+
+            
             // Don't forget to free the memory when done
-            free(file_content);
+            free(jsonStr);
         } else {
             printf("Error loading the file.\n");
         }
