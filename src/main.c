@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include "file_utils.h"
 
 void printHelp() {
     printf("Description: A tool for finding the best path through a graph in a JSON file.\n");
@@ -33,14 +34,29 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    // Your code to use the 'framework' and 'file_path' variables goes here
+    // Load the JSON file
 
     if (framework) {
         printf("Framework: %s\n", framework);
     } else {
-        printf("No framework specified.\n");
+        // sequential
+        printf("No framework specified. Sequential mode.\n");
+
+        char *file_content = loadFile(file_path);
+        if (file_content) {
+            // Use the file content
+            printf("File content:\n%s\n", file_content);
+
+            // Don't forget to free the memory when done
+            free(file_content);
+        } else {
+            printf("Error loading the file.\n");
+        }
+        
     }
-    printf("File Path: %s\n", file_path);
+    printf("File Path: %s\n", file_path);     
+
+
 
     return 0;
 }
