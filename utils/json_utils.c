@@ -12,35 +12,35 @@ cJSON* parseJSON(const char* jsonStr) {
     return root; // Return the root cJSON object
 }
 
-// json_utils.c
 
-RouteData* parseRoutes(cJSON* root, int* numRoutes) {
+ItemData* parseItems(cJSON* root, int* numItems) {
     if (!cJSON_IsObject(root)) {
         return NULL; // The root object is not as expected
     }
 
     int count = cJSON_GetArraySize(root);
     if (count == 0) {
-        *numRoutes = 0;
-        return NULL; // No routes found
+        *numItems = 0;
+        return NULL; // No items found
     }
 
-    RouteData* routeArray = (RouteData*)malloc(count * sizeof(RouteData));
-    if (routeArray == NULL) {
-        *numRoutes = 0;
+    ItemData* itemArray = (ItemData*)malloc(count * sizeof(ItemData));
+    if (itemArray == NULL) {
+        *numItems = 0;
         return NULL; // Memory allocation error
     }
 
-    cJSON* currentRoute = root->child;
+    cJSON* currentItem = root->child;
     int i = 0;
-    while (currentRoute != NULL) {
-        routeArray[i].id = currentRoute->string; // Get the ID
-        routeArray[i].route = currentRoute; // Get the cJSON object for the route
+    while (currentItem != NULL) {
+        itemArray[i].id = currentItem->string; // Get the ID
+        itemArray[i].item = currentItem; // Get the cJSON object for the item
         i++;
-        currentRoute = currentRoute->next;
+        currentItem = currentItem->next;
     }
 
-    *numRoutes = count;
-    return routeArray;
+    *numItems = count;
+    return itemArray;
 }
+
 

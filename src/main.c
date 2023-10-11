@@ -51,20 +51,21 @@ int main(int argc, char *argv[]) {
             cJSON* root = parseJSON(jsonStr);
             
             if (root != NULL) {
-                int numRoutes;
-                RouteData* routeArray = parseRoutes(root, &numRoutes);
+                int numItems;
+                ItemData* itemArray = parseItems(root, &numItems);
 
-                if (routeArray != NULL) {
-                    for (int i = 0; i < numRoutes; i++) {
-                        const char* id = routeArray[i].id;
-                        cJSON* route = routeArray[i].route;
+            if (itemArray != NULL) {
+                for (int i = 0; i < numItems; i++) {
+                    const char* id = itemArray[i].id;
+                    cJSON* item = itemArray[i].item;
 
-                        printf("ID: %s\n route: %s\n", id, cJSON_Print(route));
-                        // Process the ID and route cJSON object
-                        // Example: cJSON_Print(route) to print the route JSON
-                    }
-                    free(routeArray);
+                    printf("ID: %s\n", id);
+                    printf("Item: %s\n", cJSON_Print(item));
+                    // Process the ID and item cJSON object
+                    // Example: cJSON_Print(item) to print the item JSON
                 }
+                free(itemArray);
+            }
 
                 cJSON_Delete(root);
             }
