@@ -1,7 +1,7 @@
 CC = gcc
 CFLAGS = -Wall -Wextra
-TARGET = jgs
-SOURCE = src/main.c  # Change this to your source file's name
+TARGET = bin/jgs  # Output to the 'bin' folder
+SOURCE = main.c
 
 .PHONY: all clean
 
