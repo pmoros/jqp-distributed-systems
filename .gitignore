@@ -1,2 +1,4 @@
 build/*
 datasets/*
+# binary files
+jqs
