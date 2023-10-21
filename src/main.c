@@ -2,12 +2,17 @@
 #include <string.h>
 #include "file_utils.h"
 #include "json_utils.h"
+#include "graph_solver.h"
+
+// Define a global flag for debugging
+int debug_flag = 0;
 
 void printHelp() {
     printf("Description: A tool for finding the best path through a graph in a JSON file.\n");
-    printf("Usage: jgs [OPTIONS] FILE_PATH\n");    
+    printf("Usage: jgs [OPTIONS] FILE_PATH\n");
     printf("  --framework   Specify the framework (e.g., OpenMP, CUDA, MPI)\n");
     printf("  -h, --help    Display this help message\n");
+    printf("  --debug       Enable debug mode\n");
 }
 
 int main(int argc, char *argv[]) {
@@ -22,6 +27,8 @@ int main(int argc, char *argv[]) {
         } else if (strcmp(argv[i], "-h") == 0 || strcmp(argv[i], "--help") == 0) {
             printHelp();
             return 0;
+        } else if (strcmp(argv[i], "--debug") == 0) {
+            debug_flag = 1; // Enable debug mode
         } else {
             // Assuming the last non-flag argument is the file path
             file_path = argv[i];
@@ -40,47 +47,54 @@ int main(int argc, char *argv[]) {
     if (framework) {
         printf("Framework: %s\n", framework);
     } else {
-        // sequential
+        // Sequential
         printf("No framework specified. Sequential mode.\n");
 
         char *jsonStr = loadFile(file_path);
         if (jsonStr) {
-            // Use the file content
-            printf("File content:\n%s\n", jsonStr);
-            
-            cJSON* root = parseJSON(jsonStr);
-            
+            if (debug_flag) {
+                printf("Debug mode enabled. File content:\n%s\n", jsonStr);
+                printf("\n");
+            }
+
+            cJSON *root = parseJSON(jsonStr);
+
             if (root != NULL) {
                 int numItems;
-                ItemData* itemArray = parseItems(root, &numItems);
+                ItemData *itemArray = parseItems(root, &numItems);
 
-            if (itemArray != NULL) {
-                for (int i = 0; i < numItems; i++) {
-                    const char* id = itemArray[i].id;
-                    cJSON* item = itemArray[i].item;
+                if (itemArray != NULL) {
+                    for (int i = 0; i < numItems; i++) {
+                        const char *id = itemArray[i].id;
+                        cJSON *item = itemArray[i].item;
 
-                    printf("ID: %s\n", id);
-                    printf("Item: %s\n", cJSON_Print(item));
-                    // Process the ID and item cJSON object
-                    // Example: cJSON_Print(item) to print the item JSON
+                        if (debug_flag) {
+                            printf("ID: %s\n", id);
+                            printf("Item: %s\n", cJSON_Print(item));
+                            printf("\n");
+                        }
+                        
+                        if (debug_flag) {
+                            ItemData departureStop = *getDepartureStop(item);
+                            printf("Departure stop ID: %s\n", departureStop.id);
+                            printf("Distances for departure stop: %s\n", cJSON_Print(departureStop.item));
+                            printf("\n");
+                        }
+
+                    }
+                    free(itemArray);
                 }
-                free(itemArray);
-            }
 
                 cJSON_Delete(root);
             }
 
-            
             // Don't forget to free the memory when done
             free(jsonStr);
         } else {
             printf("Error loading the file.\n");
         }
-        
     }
-    printf("File Path: %s\n", file_path);     
-
-
+    printf("File Path: %s\n", file_path);
 
     return 0;
 }
