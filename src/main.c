@@ -61,28 +61,21 @@ int main(int argc, char *argv[]) {
 
             if (root != NULL) {
                 int numItems;
-                ItemData *itemArray = parseItems(root, &numItems);
+                ItemData *routesArray = parseItems(root, &numItems);
 
-                if (itemArray != NULL) {
+                if (routesArray != NULL) {
                     for (int i = 0; i < numItems; i++) {
-                        const char *id = itemArray[i].id;
-                        cJSON *item = itemArray[i].item;
+                        const char *routeId = routesArray[i].id;
+                        cJSON *routeStops = routesArray[i].item;
 
                         if (debug_flag) {
-                            printf("ID: %s\n", id);
-                            printf("Item: %s\n", cJSON_Print(item));
+                            printf("ID: %s\n", routeId);
+                            printf("Route stops: %s\n", cJSON_Print(routeStops));
                             printf("\n");
                         }
                         
-                        if (debug_flag) {
-                            ItemData departureStop = *getDepartureStop(item);
-                            printf("Departure stop ID: %s\n", departureStop.id);
-                            printf("Distances for departure stop: %s\n", cJSON_Print(departureStop.item));
-                            printf("\n");
-                        }
-
                     }
-                    free(itemArray);
+                    free(routesArray);
                 }
 
                 cJSON_Delete(root);
