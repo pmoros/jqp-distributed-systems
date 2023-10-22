@@ -82,6 +82,18 @@ int main(int argc, char *argv[]) {
                                 printf("%s ", stopsLabels[j]);
                             }
                         }
+
+                        if (debug_flag) {
+                            // Print the distance matrix
+                            double **distanceMatrix = (double**)getDistanceMatrix(routeStops);
+                            printf("\nDistance matrix:\n");
+                            for (int j = 0; j < cJSON_GetArraySize(routeStops); j++) {
+                                for (int k = 0; k < cJSON_GetArraySize(routeStops->child); k++) {
+                                    printf("%lf ", distanceMatrix[j][k]);
+                                }
+                                printf("\n");
+                            }
+                        }
                         
                     }
                     free(routesArray);
