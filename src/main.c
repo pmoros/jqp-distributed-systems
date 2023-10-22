@@ -73,6 +73,15 @@ int main(int argc, char *argv[]) {
                             printf("Route stops: %s\n", cJSON_Print(routeStops));
                             printf("\n");
                         }
+
+                        if (debug_flag) {
+                            // Print the stops labels
+                            char **stopsLabels = (char**)getStopsLabels(routeStops);
+                            printf("Stops labels: ");
+                            for (int j = 0; j < cJSON_GetArraySize(routeStops); j++) {
+                                printf("%s ", stopsLabels[j]);
+                            }
+                        }
                         
                     }
                     free(routesArray);

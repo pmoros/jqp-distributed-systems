@@ -1,6 +1,7 @@
 #ifndef GRAPH_SOLVER_H
 #define GRAPH_SOLVER_H
 
+#include <stdlib.h>
 #include "json_utils.h"
 
 typedef struct {
@@ -10,6 +11,8 @@ typedef struct {
 } BestRouteData;
 
 
-ItemData* getDepartureStop(cJSON* routeData);
+char** getStopsLabels(cJSON* routeData);
+// Function to get the best route that visits all the stops in the given list and starts and ends at the given stop
+BestRouteData* getBestRoute(cJSON* routeData);
 
 #endif // GRAPH_SOLVER_H
