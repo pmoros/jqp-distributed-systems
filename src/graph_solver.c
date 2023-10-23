@@ -6,7 +6,7 @@ double min(double a, double b) {
     return (a < b) ? a : b;
 }
 
-BestRouteData* getBestRoute(cJSON* routeData){        
+char** getBestRoute(cJSON* routeData){        
     const int numStops = cJSON_GetArraySize(routeData);
     double** dist = getDistanceMatrix(routeData);
 
@@ -14,35 +14,47 @@ BestRouteData* getBestRoute(cJSON* routeData){
     const int columns = 1 << (numStops + 1);
     double** memo = allocateMemoizationTable(rows, columns);
     int* efficientRoute = (int*)malloc(numStops * sizeof(int));
+    int efficientRouteIndex = 0;
 
     double ans = MAX;
     for (int i = 0; i < numStops; i++){
         // try to go from node 1 visiting all nodes in
         // between to i then return from i taking the
         // shortest route to 1        
-        ans = min(ans, fun(i, (1 << (numStops + 1)) - 1, numStops, dist, memo) + dist[i][0]);        
+        ans = min(ans, fun(i, (1 << (numStops + 1)) - 1, numStops, dist, memo, efficientRoute, &efficientRouteIndex) + dist[i][0]);        
         }
  
     printf("The cost of most efficient tour = %lf\n", ans);
- 
+    
     free(memo);
 
-    return 0;    
+    char** stopsLabels = getStopsLabels(routeData);
+    char** efficientRouteLabels = (char**)malloc(numStops * sizeof(char*));
+    for (int i = 0; i < numStops; i++){
+        efficientRouteLabels[i] = stopsLabels[efficientRoute[i]];
+    }
+    return efficientRouteLabels;    
 
 }
 
 
-double fun(int i, int mask, int n, double** dist, double** memo)
+double fun(int i, int mask, int n, double** dist, double** memo, int* efficientRoute, int* efficientRouteIndex)
 {
     // base case
     // if only ith bit and 1st bit is set in our mask,
     // it implies we have visited all other nodes already
-    if (mask == ((1 << i) | 15))
+    if (mask == ((1 << i) | 15)){
+        efficientRoute[*efficientRouteIndex] = i;
+        *efficientRouteIndex = *efficientRouteIndex + 1;                                                         
         return dist[1][i];    
+        }
         
     // memoization
-    if (memo[i][mask] != 0)
+    if (memo[i][mask] != 0){
+        efficientRoute[*efficientRouteIndex] = i;
+        *efficientRouteIndex = *efficientRouteIndex + 1;                                                         
         return memo[i][mask];
+        }
  
     double res = MAX; // result of this sub-problem
  
@@ -55,9 +67,11 @@ double fun(int i, int mask, int n, double** dist, double** memo)
  
     for (int j = 0; j < n; j++)
         if ((mask & (1 << j)) && j != i && j != 1)        
-            res = min(res, fun(j, mask & (~(1 << i)), n, dist, memo)
-                                    + dist[i][j]);            
-        
+            res = min(res, fun(j, mask & (~(1 << i)), n, dist, memo, efficientRoute, efficientRouteIndex)
+                                    + dist[i][j]);
+
+            
+            
     return memo[i][mask] = res;
 }
 

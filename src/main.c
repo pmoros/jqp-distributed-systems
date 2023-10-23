@@ -69,7 +69,12 @@ int main(int argc, char *argv[]) {
                             printf("\n");
                         }
 
-                        BestRouteData *bestRoute = getBestRoute(routeStops);
+                        char** bestRoute = getBestRoute(routeStops);
+                        printf("Best route: ");
+                        for (int i = 0; i < cJSON_GetArraySize(routeStops); i++) {
+                            printf("%s ", bestRoute[i]);
+                        }
+
                         
                     }
                     free(routesArray);

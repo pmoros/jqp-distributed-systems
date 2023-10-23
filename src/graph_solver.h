@@ -15,8 +15,8 @@ typedef struct {
 char** getStopsLabels(cJSON* routeData);
 double** getDistanceMatrix(cJSON* routeData);
 double** allocateMemoizationTable(int rows, int columns);
-double fun(int i, int mask, int n, double** dist, double** memo);
+double fun(int i, int mask, int n, double** dist, double** memo,  int* efficientRoute, int* efficientRouteIndex);
 // Function to get the best route that visits all the stops in the given list and starts and ends at the given stop
-BestRouteData* getBestRoute(cJSON* routeData);
+char** getBestRoute(cJSON* routeData);
 
 #endif // GRAPH_SOLVER_H
