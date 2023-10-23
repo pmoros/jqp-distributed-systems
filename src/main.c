@@ -94,6 +94,8 @@ int main(int argc, char *argv[]) {
                                 printf("\n");
                             }
                         }
+
+                        BestRouteData *bestRoute = getBestRoute(routeStops);
                         
                     }
                     free(routesArray);
