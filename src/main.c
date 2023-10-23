@@ -52,11 +52,6 @@ int main(int argc, char *argv[]) {
 
         char *jsonStr = loadFile(file_path);
         if (jsonStr) {
-            if (debug_flag) {
-                printf("Debug mode enabled. File content:\n%s\n", jsonStr);
-                printf("\n");
-            }
-
             cJSON *root = parseJSON(jsonStr);
 
             if (root != NULL) {
@@ -68,31 +63,10 @@ int main(int argc, char *argv[]) {
                         const char *routeId = routesArray[i].id;
                         cJSON *routeStops = routesArray[i].item;
 
-                        if (debug_flag) {
-                            printf("ID: %s\n", routeId);
+                        printf("ID: %s\n", routeId);
+                        if (debug_flag) {                            
                             printf("Route stops: %s\n", cJSON_Print(routeStops));
                             printf("\n");
-                        }
-
-                        if (debug_flag) {
-                            // Print the stops labels
-                            char **stopsLabels = (char**)getStopsLabels(routeStops);
-                            printf("Stops labels: ");
-                            for (int j = 0; j < cJSON_GetArraySize(routeStops); j++) {
-                                printf("%s ", stopsLabels[j]);
-                            }
-                        }
-
-                        if (debug_flag) {
-                            // Print the distance matrix
-                            double **distanceMatrix = (double**)getDistanceMatrix(routeStops);
-                            printf("\nDistance matrix:\n");
-                            for (int j = 0; j < cJSON_GetArraySize(routeStops); j++) {
-                                for (int k = 0; k < cJSON_GetArraySize(routeStops->child); k++) {
-                                    printf("%lf ", distanceMatrix[j][k]);
-                                }
-                                printf("\n");
-                            }
                         }
 
                         BestRouteData *bestRoute = getBestRoute(routeStops);

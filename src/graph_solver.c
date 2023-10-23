@@ -13,13 +13,13 @@ BestRouteData* getBestRoute(cJSON* routeData){
     const int rows = numStops + 1;
     const int columns = 1 << (numStops + 1);
     double** memo = allocateMemoizationTable(rows, columns);
-    
+    int* efficientRoute = (int*)malloc(numStops * sizeof(int));
+
     double ans = MAX;
     for (int i = 0; i < numStops; i++){
         // try to go from node 1 visiting all nodes in
         // between to i then return from i taking the
         // shortest route to 1        
-        printf("Mask initial %d\n", (1 << (numStops + 1)) - 1);
         ans = min(ans, fun(i, (1 << (numStops + 1)) - 1, numStops, dist, memo) + dist[i][0]);        
         }
  
@@ -37,10 +37,9 @@ double fun(int i, int mask, int n, double** dist, double** memo)
     // base case
     // if only ith bit and 1st bit is set in our mask,
     // it implies we have visited all other nodes already
-    if (mask == ((1 << i) | 15)){
-        printf("aaa %lf\n", dist[1][i]);
-        return dist[1][i];
-    }
+    if (mask == ((1 << i) | 15))
+        return dist[1][i];    
+        
     // memoization
     if (memo[i][mask] != 0)
         return memo[i][mask];
@@ -55,14 +54,9 @@ double fun(int i, int mask, int n, double** dist, double** memo)
     // all possible j nodes
  
     for (int j = 0; j < n; j++)
-        if ((mask & (1 << j)) && j != i && j != 1){
-        
+        if ((mask & (1 << j)) && j != i && j != 1)        
             res = min(res, fun(j, mask & (~(1 << i)), n, dist, memo)
-                                    + dist[i][j]);
-
-            printf("%lf ", res);
-
-            }
+                                    + dist[i][j]);            
         
     return memo[i][mask] = res;
 }
