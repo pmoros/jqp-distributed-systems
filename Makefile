@@ -1,7 +1,7 @@
 # Makefile
 
 CC = gcc
-CFLAGS = -Wall
+CFLAGS = -g -Wall
 
 # Source files in the src directory
 SRC_DIR = src
