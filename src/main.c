@@ -3,6 +3,7 @@
 #include "file_utils.h"
 #include "json_utils.h"
 #include "graph_solver.h"
+#include "graph_solver_openmp.h"
 
 // Define a global flag for debugging
 int debug_flag = 0;
@@ -46,6 +47,55 @@ int main(int argc, char *argv[]) {
 
     if (framework) {
         printf("Framework: %s\n", framework);
+        if(strcmp(framework, "OpenMP") == 0){
+            printf("OpenMP mode.\n");
+            
+            char *jsonStr = loadFile(file_path);
+            if (jsonStr) {
+                cJSON *root = parseJSON(jsonStr);
+
+                if (root != NULL) {
+                    int numItems;
+                    ItemData *routesArray = parseItems(root, &numItems);
+
+                    if (routesArray != NULL) {
+                        for (int i = 0; i < numItems; i++) {
+                            const char *routeId = routesArray[i].id;
+                            cJSON *routeStops = routesArray[i].item;
+
+                            printf("\nID: %s\n", routeId);
+                            if (debug_flag) {                            
+                                printf("Route stops: %s\n", cJSON_Print(routeStops));
+                                printf("\n");
+                            }
+
+                            char** bestRoute = getBestRouteOpenmp(routeStops);
+                            printf("Best route: \n");
+                            for (int i = 0; i < cJSON_GetArraySize(routeStops); i++) {
+                                printf("%s ", bestRoute[i]);
+                            }
+                            printf("\n");                                                                  
+                            
+                        }
+                        free(routesArray);
+                    }
+
+                    cJSON_Delete(root);
+                }
+
+                // Don't forget to free the memory when done
+                free(jsonStr);
+            } else {
+                printf("Error loading the file.\n");
+            }            
+        } else if(strcmp(framework, "CUDA") == 0){
+            printf("CUDA mode.\n");
+        } else if(strcmp(framework, "MPI") == 0){
+            printf("MPI mode.\n");
+        } else {
+            printf("Invalid framework.\n");
+        }
+
     } else {
         // Sequential
         printf("No framework specified. Sequential mode.\n");
@@ -58,7 +108,7 @@ int main(int argc, char *argv[]) {
                 int numItems;
                 ItemData *routesArray = parseItems(root, &numItems);
 
-                if (routesArray != NULL) {
+                if (routesArray != NULL) {                    
                     for (int i = 0; i < numItems; i++) {
                         const char *routeId = routesArray[i].id;
                         cJSON *routeStops = routesArray[i].item;
@@ -69,7 +119,7 @@ int main(int argc, char *argv[]) {
                             printf("\n");
                         }
 
-                        char** bestRoute = getBestRoute(routeStops);
+                        char** bestRoute = getBestRouteSequential(routeStops);
                         printf("Best route: \n");
                         for (int i = 0; i < cJSON_GetArraySize(routeStops); i++) {
                             printf("%s ", bestRoute[i]);

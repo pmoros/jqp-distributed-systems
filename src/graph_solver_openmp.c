@@ -1,15 +1,16 @@
-#include "graph_solver.h"
+#include "graph_solver_openmp.h"
 #include <string.h>
 
 #define MAX 999999
 
-char** getBestRouteSequential(cJSON* routeData){        
+
+char** getBestRouteOpenmp(cJSON* routeData){  
     const int numStops = cJSON_GetArraySize(routeData);    
-    double** dist = getDistanceMatrixSequential(routeData);
+    double** dist = getDistanceMatrixOpenmp(routeData);
 
     const int rows = numStops + 1;    
     const int columns = numStops + 1;        
-    double** memo = allocateMemoizationTableSequential(rows, 1 << columns);
+    double** memo = allocateMemoizationTableOpenmp(rows, 1 << columns);
     int* efficientRoute = (int*)malloc(numStops * sizeof(int));    
     int* efficientRouteIndex = (int*)malloc(sizeof(int));
     *efficientRouteIndex = 0;
@@ -23,12 +24,12 @@ char** getBestRouteSequential(cJSON* routeData){
         // try to go from node 1 visiting all nodes in
         // between to i then return from i taking the
         // shortest route to 1        
-        ans = min(ans, fun(i, (1 << (numStops + 1)) - 1, numStops, dist, memo, efficientRoute, efficientRouteIndex) + dist[i][0]);        
+        ans = min(ans, funOpenmp(i, (1 << (numStops + 1)) - 1, numStops, dist, memo, efficientRoute, efficientRouteIndex) + dist[i][0]);        
         }
  
     printf("The cost of most efficient tour = %lf\n", ans);    
 
-    char** stopsLabels = getStopsLabelsSequential(routeData);
+    char** stopsLabels = getStopsLabelsOpenmp(routeData);
     char** efficientRouteLabels = (char**)malloc(numStops * sizeof(char*));
     for (int i = 0; i < numStops; i++){
         efficientRouteLabels[i] = '\0';
@@ -54,7 +55,7 @@ char** getBestRouteSequential(cJSON* routeData){
 }
 
 
-double fun(int i, int mask, int n, double** dist, double** memo, int* efficientRoute, int* efficientRouteIndex)
+double funOpenmp(int i, int mask, int n, double** dist, double** memo, int* efficientRoute, int* efficientRouteIndex)
 {
     // base case
     // if only ith bit and 1st bit is set in our mask,
@@ -83,7 +84,7 @@ double fun(int i, int mask, int n, double** dist, double** memo, int* efficientR
  
     for (int j = 0; j < n; j++)
         if ((mask & (1 << j)) && j != i && j != 1)        
-            res = min(res, fun(j, mask & (~(1 << i)), n, dist, memo, efficientRoute, efficientRouteIndex)
+            res = min(res, funOpenmp(j, mask & (~(1 << i)), n, dist, memo, efficientRoute, efficientRouteIndex)
                                     + dist[i][j]);
 
             
@@ -91,7 +92,7 @@ double fun(int i, int mask, int n, double** dist, double** memo, int* efficientR
     return memo[i][mask] = res;
 }
 
-double** allocateMemoizationTableSequential(int rows, int columns){
+double** allocateMemoizationTableOpenmp(int rows, int columns){
     double** memo = (double**)malloc(rows * sizeof(double*));
     if (memo == NULL) {
         // Handle memory allocation failure
@@ -115,7 +116,7 @@ double** allocateMemoizationTableSequential(int rows, int columns){
 
 
 
-char** getStopsLabelsSequential(cJSON* routeData){
+char** getStopsLabelsOpenmp(cJSON* routeData){
     int numStops = cJSON_GetArraySize(routeData);
     char** stopsLabels = (char**)malloc(numStops * sizeof(char*));
 
@@ -133,7 +134,7 @@ char** getStopsLabelsSequential(cJSON* routeData){
     return stopsLabels;
 }
 
-double** getDistanceMatrixSequential(cJSON* routeData){
+double** getDistanceMatrixOpenmp(cJSON* routeData){
     int numStops = cJSON_GetArraySize(routeData);
     double** distanceMatrix = (double**)malloc(numStops * sizeof(double*));
 
