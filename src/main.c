@@ -63,18 +63,18 @@ int main(int argc, char *argv[]) {
                         const char *routeId = routesArray[i].id;
                         cJSON *routeStops = routesArray[i].item;
 
-                        printf("ID: %s\n", routeId);
+                        printf("\nID: %s\n", routeId);
                         if (debug_flag) {                            
                             printf("Route stops: %s\n", cJSON_Print(routeStops));
                             printf("\n");
                         }
 
                         char** bestRoute = getBestRoute(routeStops);
-                        printf("Best route: ");
+                        printf("Best route: \n");
                         for (int i = 0; i < cJSON_GetArraySize(routeStops); i++) {
                             printf("%s ", bestRoute[i]);
                         }
-
+                        printf("\n");                                                                  
                         
                     }
                     free(routesArray);

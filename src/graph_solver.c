@@ -1,4 +1,5 @@
 #include "graph_solver.h"
+#include <string.h>
 
 #define MAX 999999
 
@@ -7,15 +8,19 @@ double min(double a, double b) {
 }
 
 char** getBestRoute(cJSON* routeData){        
-    const int numStops = cJSON_GetArraySize(routeData);
+    const int numStops = cJSON_GetArraySize(routeData);    
     double** dist = getDistanceMatrix(routeData);
 
-    const int rows = numStops + 1;
-    const int columns = 1 << (numStops + 1);
-    double** memo = allocateMemoizationTable(rows, columns);
-    int* efficientRoute = (int*)malloc(numStops * sizeof(int));
+    const int rows = numStops + 1;    
+    const int columns = numStops + 1;        
+    double** memo = allocateMemoizationTable(rows, 1 << columns);
+    int* efficientRoute = (int*)malloc(numStops * sizeof(int));    
     int* efficientRouteIndex = (int*)malloc(sizeof(int));
     *efficientRouteIndex = 0;
+
+    for (int i = 0; i < numStops; i++){
+        efficientRoute[i] = -1;
+    }
 
     double ans = MAX;
     for (int i = 0; i < numStops; i++){
@@ -25,15 +30,28 @@ char** getBestRoute(cJSON* routeData){
         ans = min(ans, fun(i, (1 << (numStops + 1)) - 1, numStops, dist, memo, efficientRoute, efficientRouteIndex) + dist[i][0]);        
         }
  
-    printf("The cost of most efficient tour = %lf\n", ans);
-    
-    free(memo);
+    printf("The cost of most efficient tour = %lf\n", ans);    
 
     char** stopsLabels = getStopsLabels(routeData);
     char** efficientRouteLabels = (char**)malloc(numStops * sizeof(char*));
     for (int i = 0; i < numStops; i++){
+        efficientRouteLabels[i] = '\0';
+    }
+
+    // get the labels for the efficient route
+    for (int i = 0; i < numStops; i++){        
         efficientRouteLabels[i] = stopsLabels[efficientRoute[i]];
-    }    
+    }
+
+    // free memory
+    for (int i = 0; i < numStops; i++){
+        free(dist[i]);        
+    }
+
+    free(dist);        
+    free(stopsLabels);
+    free(efficientRoute);
+    free(efficientRouteIndex);    
 
     return efficientRouteLabels;    
 
@@ -44,17 +62,17 @@ double fun(int i, int mask, int n, double** dist, double** memo, int* efficientR
 {
     // base case
     // if only ith bit and 1st bit is set in our mask,
-    // it implies we have visited all other nodes already
-    if (mask == ((1 << i) | 15)){
+    // it implies we have visited all other nodes already    
+    if (mask == ((1 << i) | 15)){        
         efficientRoute[*efficientRouteIndex] = i;
-        *efficientRouteIndex = *efficientRouteIndex + 1;                                                         
+        *efficientRouteIndex = (*efficientRouteIndex + 1) % n;                                                         
         return dist[1][i];    
         }
         
     // memoization
     if (memo[i][mask] != 0){
         efficientRoute[*efficientRouteIndex] = i;
-        *efficientRouteIndex = *efficientRouteIndex + 1;                                                         
+        *efficientRouteIndex = (*efficientRouteIndex + 1) % n;                                                         
         return memo[i][mask];
         }
  
@@ -92,7 +110,7 @@ double** allocateMemoizationTable(int rows, int columns){
             exit(1);  // You can choose an appropriate error handling mechanism
         }
         for (int j = 0; j < columns; j++) {
-            memo[i][j] = 0; // Initialize memoization table with -1            
+            memo[i][j] = (double)0; // Initialize memoization table with -1            
         }        
     }
     
@@ -108,8 +126,10 @@ char** getStopsLabels(cJSON* routeData){
     cJSON* current = routeData->child;    
     int i = 0;    
     while (current != NULL){
-        char* key = current->string;
-        stopsLabels[i] = key;
+        char* key = current->string;     
+        char* keyCopy = (char*)malloc(4 * sizeof(char));   
+        strcpy(keyCopy, key);
+        stopsLabels[i] = keyCopy;
         current = current->next;
         i++;
     }
@@ -129,7 +149,8 @@ double** getDistanceMatrix(cJSON* routeData){
         cJSON* value = current->child;
         int j = 0;
         while(value != NULL){            
-            distanceMatrix[i][j] = value->valuedouble;
+
+            distanceMatrix[i][j] = (double)value->valuedouble;
 
             j++;
             value = value->next;                    
