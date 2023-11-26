@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <omp.h>
 #include "file_utils.h"
 #include "json_utils.h"
 #include "graph_solver.h"
@@ -59,6 +60,7 @@ int main(int argc, char *argv[]) {
                     ItemData *routesArray = parseItems(root, &numItems);
 
                     if (routesArray != NULL) {
+                        #pragma omp parallel for
                         for (int i = 0; i < numItems; i++) {
                             const char *routeId = routesArray[i].id;
                             cJSON *routeStops = routesArray[i].item;
@@ -71,6 +73,7 @@ int main(int argc, char *argv[]) {
 
                             char** bestRoute = getBestRouteOpenmp(routeStops);
                             printf("Best route: \n");
+                            #pragma omp parallel for
                             for (int i = 0; i < cJSON_GetArraySize(routeStops); i++) {
                                 printf("%s ", bestRoute[i]);
                             }

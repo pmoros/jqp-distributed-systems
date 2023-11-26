@@ -1,7 +1,7 @@
 # Makefile
 
 CC = gcc
-CFLAGS = -Wall
+CFLAGS = -Wall -fopenmp
 
 # Source files in the src directory
 SRC_DIR = src

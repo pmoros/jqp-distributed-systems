@@ -1,5 +1,6 @@
 #include "graph_solver_openmp.h"
 #include <string.h>
+#include <omp.h>
 
 #define MAX 999999
 
@@ -14,12 +15,12 @@ char** getBestRouteOpenmp(cJSON* routeData){
     int* efficientRoute = (int*)malloc(numStops * sizeof(int));    
     int* efficientRouteIndex = (int*)malloc(sizeof(int));
     *efficientRouteIndex = 0;
-
+        
     for (int i = 0; i < numStops; i++){
         efficientRoute[i] = -1;
     }
 
-    double ans = MAX;
+    double ans = MAX;    
     for (int i = 0; i < numStops; i++){
         // try to go from node 1 visiting all nodes in
         // between to i then return from i taking the
@@ -31,16 +32,17 @@ char** getBestRouteOpenmp(cJSON* routeData){
 
     char** stopsLabels = getStopsLabelsOpenmp(routeData);
     char** efficientRouteLabels = (char**)malloc(numStops * sizeof(char*));
+
     for (int i = 0; i < numStops; i++){
         efficientRouteLabels[i] = '\0';
     }
 
-    // get the labels for the efficient route
+    // get the labels for the efficient route    
     for (int i = 0; i < numStops; i++){        
         efficientRouteLabels[i] = stopsLabels[efficientRoute[i]];
     }
 
-    // free memory
+    // free memory    
     for (int i = 0; i < numStops; i++){
         free(dist[i]);        
     }
@@ -81,7 +83,7 @@ double funOpenmp(int i, int mask, int n, double** dist, double** memo, int* effi
     // mask except i and then travel back from node j to
     // node i taking the shortest path take the minimum of
     // all possible j nodes
- 
+     
     for (int j = 0; j < n; j++)
         if ((mask & (1 << j)) && j != i && j != 1)        
             res = min(res, funOpenmp(j, mask & (~(1 << i)), n, dist, memo, efficientRoute, efficientRouteIndex)
@@ -99,13 +101,13 @@ double** allocateMemoizationTableOpenmp(int rows, int columns){
         exit(1);  // You can choose an appropriate error handling mechanism
     }
 
-    // Allocate memory for each row (an array of ints)
+    // Allocate memory for each row (an array of ints)    
     for (int i = 0; i < rows; i++) {
         memo[i] = (double *)malloc(columns * sizeof(double));
         if (memo[i] == NULL) {
             // Handle memory allocation failure
             exit(1);  // You can choose an appropriate error handling mechanism
-        }
+        }        
         for (int j = 0; j < columns; j++) {
             memo[i][j] = (double)0; // Initialize memoization table with -1            
         }        
