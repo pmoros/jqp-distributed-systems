@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <omp.h>
+#include <cuda.h>
+#include <cuda_runtime.h>
 #include "file_utils.h"
 #include "json_utils.h"
 #include "graph_solver.h"
@@ -20,6 +22,13 @@ void printHelp() {
 int main(int argc, char *argv[]) {
     char *framework = NULL;
     char *file_path = NULL;
+    
+    int a = 2;
+    int b = 3;
+
+    kernel_wrapper(&a, &b);
+    printf("a value: %i\n", a);
+    printf("b value: %i\n", b);
 
     // Parse command line arguments
     for (int i = 1; i < argc; i++) {
