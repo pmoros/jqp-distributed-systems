@@ -1,5 +1,9 @@
 {
     "files.associations": {
-        "type_traits": "c"
+        "type_traits": "c",
+        "b.h": "c",
+        "graph_solver_openmp.h": "c",
+        "file_utils.h": "c",
+        "graph_solver.h": "c"
     }
 }

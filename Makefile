@@ -1,7 +1,7 @@
 # Makefile
 
 CC = gcc
-CFLAGS = -Wall -fopenmp
+CFLAGS = -Wall -fopenmp -lcudart -I/usr/local/cuda/include -L/usr/local/cuda/lib64
 
 # Source files in the src directory
 SRC_DIR = src
