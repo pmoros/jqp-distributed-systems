@@ -46,3 +46,7 @@ The best route is a list of the nodes that must be visited in order to deliver t
 
 ## Requirements
  The program must be able to receive a JSON file with any number of routes and destinations. The program must be able to run in a distributed system. The program must be able to run in a single machine. The program must be able to run in a single machine with parallel computing. The program must be able to run in a distributed system with parallel computing.
+
+ # MPI execution
+* `make`
+* `mpirun -n 4 ./bin/jgs_mpi datasets/generated/1000_records.json`
