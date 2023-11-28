@@ -1,0 +1,29 @@
+Vagrant.configure("2") do |config|
+    # Define the first VM
+    config.vm.define "vm1" do |vm1|
+      vm1.vm.box = "pnikolopoulos/mpi"
+      vm1.vm.network "private_network", type: "dhcp"
+      vm1.vm.provider "virtualbox" do |vb|
+        vb.customize ["modifyvm", :id, "--uartmode1", "file", "/vagrant/vm1-console.log"]
+      end
+    end
+  
+    # Define the second VM
+    config.vm.define "vm2" do |vm2|
+      vm2.vm.box = "pnikolopoulos/mpi"
+      vm2.vm.network "private_network", type: "dhcp"
+      vm2.vm.provider "virtualbox" do |vb|
+        vb.customize ["modifyvm", :id, "--uartmode1", "file", "/vagrant/vm2-console.log"]
+      end
+    end
+  
+    # Define the third VM
+    config.vm.define "vm3" do |vm3|
+      vm3.vm.box = "pnikolopoulos/mpi"
+      vm3.vm.network "private_network", type: "dhcp"
+      vm3.vm.provider "virtualbox" do |vb|
+        vb.customize ["modifyvm", :id, "--uartmode1", "file", "/vagrant/vm3-console.log"]
+      end
+    end
+  end
+  
