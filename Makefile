@@ -1,7 +1,7 @@
 # Makefile
 
-CC = gcc
-CFLAGS = -Wall -fopenmp -lcudart -I/usr/local/cuda/include -L/usr/local/cuda/lib64
+CC = mpicc
+CFLAGS = -Wall
 
 # Source files in the src directory
 SRC_DIR = src
@@ -19,7 +19,7 @@ OBJS = $(patsubst $(SRC_DIR)/%.c,$(BUILD_DIR)/%.o,$(SRCS)) $(patsubst $(UTILS_DI
 
 # Executable name and directory
 EXEC_DIR = bin
-EXEC = $(EXEC_DIR)/jgs
+EXEC = $(EXEC_DIR)/jgs_mpi
 
 # Include path for header files
 INC_DIR = utils
