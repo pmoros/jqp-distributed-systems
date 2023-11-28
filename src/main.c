@@ -24,11 +24,17 @@ int main(int argc, char *argv[])
 
                 MPI_Init(NULL, NULL);
 
+                // Get the name of the processor
+                char processor_name[MPI_MAX_PROCESSOR_NAME];
+                int name_len;
+                MPI_Get_processor_name(processor_name, &name_len);                
+
                 // Get the number of processes
                 int world_size;
                 MPI_Comm_size(MPI_COMM_WORLD, &world_size);
 
                 printf("world size: %i", world_size);
+                
 
                 // Get the rank of the process
                 int world_rank;
@@ -50,6 +56,7 @@ int main(int argc, char *argv[])
                     const char *routeId = routesArray[i].id;
                     cJSON *routeStops = routesArray[i].item;
 
+                    printf("Processor %s, rank %d out of %d processors\n", processor_name, world_rank, world_size);
                     printf("Process %d - ID: %s\n", world_rank, routeId);
 
                     char **bestRoute = getBestRouteSequential(routeStops);
